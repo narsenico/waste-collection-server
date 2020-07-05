@@ -1,0 +1,21 @@
+{
+  "name": "waste-collection-server",
+  "version": "1.0.0",
+  "description": "Waste Collection Server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node -r dotenv/config index.js",
+    "dev": "nodemon --signal SIGHUP -r dotenv/config index.js",
+    "test": "echo test"
+  },
+  "author": "narsenico",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}

@@ -14,7 +14,13 @@ app.use(cors());
 app.use(express.static(WEBPATH));
 app.use(express.json());
 
-app.get('/hello', (req, res) => {
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.originalUrl}`);
+    next();
+});
+
+app.all('/hello', (req, res) => {
+    console.log(`hello method=${req.method}`);
     res.status(200).end();
 });
 

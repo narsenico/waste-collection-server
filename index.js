@@ -2,12 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 
+// ! NON usare fs.promises perché la versione di node su raspberry non le supporta
+
 // porta server
 const PORT = process.env.PORT;
 // percorso del contenuto statico
 const WEBPATH = process.env.WEBPATH;
 // percorso di destinazione di westdata
-const WASTEDATADEST = process.env.WASTEDATADEST;
+const WASTEDATAPATH = process.env.WASTEDATAPATH;
 
 const app = express();
 app.use(cors());
@@ -24,15 +26,31 @@ app.all('/hello', (req, res) => {
     res.status(200).end();
 });
 
-app.put('/copywastedata', async (req, res) => {
+app.get('/wastedata', (req, res) => {
+    fs.readFile(WASTEDATAPATH, 'utf-8', (err, data) => {
+        if (err) {
+            console.error(err);
+            res.status(500).end();
+        } else {
+            if (data) {
+                res.status(200).json(data).end();
+            } else {
+                res.status(204).end();
+            }
+        }
+    });
+});
+
+app.put('/wastedata', async (req, res) => {
     if (req.body && req.body.types && req.body.calendar) {
         fs.writeFile(
-            WASTEDATADEST,
+            WASTEDATAPATH,
             JSON.stringify(req.body),
             'utf-8',
             (err) => {
                 if (err) {
-                    res.status(500).send(e.message).end();
+                    console.error(err);
+                    res.status(500).end();
                 } else {
                     res.status(200).end();
                 }

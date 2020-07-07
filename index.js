@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
+const { exec } = require('child_process');
 
 // ! NON usare fs.promises perché la versione di node su raspberry non le supporta
 
@@ -10,6 +11,8 @@ const PORT = process.env.PORT;
 const WEBPATH = process.env.WEBPATH;
 // percorso di destinazione di westdata
 const WASTEDATAPATH = process.env.WASTEDATAPATH;
+// comando per riavvio node-red
+const NODEREDRESTART = process.env.NODEREDRESTART;
 
 const app = express();
 app.use(cors());
@@ -62,9 +65,19 @@ app.put('/wastedata', async (req, res) => {
     }
 });
 
-app.post('/restartrednode', (req, res) => {
-    // TODO: riavviare rednode
-    res.status(200).end();
+app.post('/apply', (req, res) => {
+    exec(NODEREDRESTART, (err, stdout, stderr) => {
+        if (err) {
+            console.error(err);
+            res.status(500).end();
+        } else if (stderr) {
+            console.error(stderr);
+            res.status(500).end();
+        } else {
+            console.log(`exec "${NODEREDRESTART}" => ${stdout}"`);
+            res.status(200).end();
+        }
+    });
 });
 
 app.listen(PORT, () => console.log('Listening on port', PORT));
